@@ -31,18 +31,19 @@ public class XO {
             if (checkWin("Computer", COMP) || check()) break;
 
             stepPlayer();
+            //printArr();
             printMap();
             if (checkWin("Player", PLAYER) || check()) break;
         }
     }
 
     public static boolean checkWin(String s, char ch) {
-        int gor = 0;
-        int ver = 0;
         int dia1 = 0;
         int dia2 = 0;
 
         for (int i = 0; i < SIZE; i++) {
+            int gor = 0;
+            int ver = 0;
             for (int j = 0; j < SIZE; j++) {
                 if (map[i][j] == ch) gor++;
                 else gor = 0;
@@ -66,7 +67,7 @@ public class XO {
 
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (arr[i][j] > -1) flag = 1;
+                if (map[i][j] != XXX && map[i][j] != OOO) flag = 1;
             }
         }
         if (flag == 0) {
