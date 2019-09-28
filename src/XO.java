@@ -4,12 +4,11 @@ public class XO {
     public static Scanner scanner = new Scanner(System.in);
     public static char map[][];
     public static int arr[][];
+    public static char PLAYER;
+    public static char COMP;
     public static final int SIZE = 3;
     public static final int LINE_WIN = 3;
     public static final char XXX = 'X';
-    public static boolean FIRST;
-    public static char PLAYER;
-    public static char COMP;
     public static final char OOO = 'O';
     public static final char NOTHING = '.';
     public static void main(String[] args) {
@@ -19,8 +18,7 @@ public class XO {
         printMap();
         //printArr();
 
-        theChoice();
-        if (FIRST) {
+        if (theChoice()) {
             stepPlayer();
             printMap();
         }
@@ -30,52 +28,34 @@ public class XO {
             stepComp();
             nullArr();
             printMap();
-
             if (checkWin("Computer", COMP) || check()) break;
 
             stepPlayer();
             printMap();
-
             if (checkWin("Player", PLAYER) || check()) break;
         }
     }
 
     public static boolean checkWin(String s, char ch) {
-        int gor;
-        int ver;
+        int gor = 0;
+        int ver = 0;
         int dia1 = 0;
         int dia2 = 0;
 
         for (int i = 0; i < SIZE; i++) {
-            gor = 0;
             for (int j = 0; j < SIZE; j++) {
                 if (map[i][j] == ch) gor++;
-            }
-            if (gor == 3) {
-                System.out.printf(s + " is win!\n");
-                return true;
-            }
-        }
-
-        for (int i = 0; i < SIZE; i++) {
-            ver = 0;
-            for (int j = 0; j < SIZE; j++) {
+                else gor = 0;
                 if (map[j][i] == ch) ver++;
-            }
-            if (ver == 3) {
-                System.out.printf(s + " is win!\n");
-                return true;
-            }
-        }
-
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (i == j && map[i][j] == COMP) dia1++;
-                if (i == SIZE - 1 - j && map[i][j] == ch) dia2++;
-            }
-            if (dia1 == 3 || dia2 == 3) {
-                System.out.printf(s + " is win!\n");
-                return true;
+                else ver = 0;
+                if (i == j && map[i][j] == ch) dia1++;
+                else dia1 = 0;
+                if (i + j == SIZE - 1 && map[i][j] == ch) dia2++;
+                else dia2 = 0;
+                if (gor == LINE_WIN || ver == LINE_WIN || dia1 == LINE_WIN || dia2 == LINE_WIN) {
+                    System.out.printf(s + " is win!\n");
+                    return true;
+                }
             }
         }
         return false;
@@ -151,7 +131,6 @@ public class XO {
     }
 
     public static void checkXO() {
-
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (map[i][j] == PLAYER) {
@@ -183,7 +162,7 @@ public class XO {
                 }
             }
         }
-        if (gor > 1 || ver > 1 || dia > 1) arr[ii][jj] += prior;
+        if (gor > LINE_WIN - 2 || ver > LINE_WIN - 2 || dia > LINE_WIN - 2) arr[ii][jj] += prior;
     }
 
     public static void checkPotWin(int id, int prior) {
@@ -217,13 +196,13 @@ public class XO {
     }
 
     public static void stepPlayer() {
-        System.out.println("Input X and Y in this format: \"X/Y\"");
+        System.out.println("Input coordinates in this format: \"X/Y\"");
         do {
             String tmp = scanner.next();
             if (tmp.length() == 3 && tmp.charAt(1) == '/') {
                 int j = tmp.charAt(0) - 48;
                 int i = tmp.charAt(2) - 48;
-                if (i < SIZE + 1 && i > 0 && j > 0 && j < SIZE + 1 && map[i - 1][j - 1] == '.') {
+                if (i < SIZE + 1 && i > 0 && j > 0 && j < SIZE + 1 && map[i - 1][j - 1] == NOTHING) {
                     map[i - 1][j - 1] = PLAYER;
                     break;
                 }
@@ -232,25 +211,23 @@ public class XO {
         } while (true);
     }
 
-    public static void theChoice() {
+    public static boolean theChoice() {
         System.out.println("Choose your sign: X or O");
         do {
             String tmp = scanner.next();
             if (tmp.toUpperCase().charAt(0) == XXX) {
                 PLAYER = XXX;
                 COMP = OOO;
-                FIRST = true;
-                break;
+                return true;
             }
             if (tmp.toUpperCase().charAt(0) == OOO) {
                 PLAYER = OOO;
                 COMP = XXX;
-                FIRST = false;
                 break;
             }
             System.out.println("Try else time");
         } while (true);
-
+        return false;
     }
 
     public static void initMap() {
